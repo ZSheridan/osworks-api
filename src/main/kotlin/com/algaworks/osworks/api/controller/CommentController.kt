@@ -11,10 +11,10 @@ import javax.validation.Valid
 
 @RestController
 @RequestMapping("service-orders/{serviceOrderId}/comments")
-class CommentController {
-
-    @Autowired
-    private val crudServiceOrderService = CrudServiceOrderService()
+class CommentController(
+        @Autowired
+        private val crudServiceOrderService: CrudServiceOrderService
+) {
 
     private val model = OutputModel()
 
@@ -28,7 +28,10 @@ class CommentController {
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@PathVariable serviceOrderId: Long,
                @Valid @RequestBody commentInput: CommentInput): CommentModel {
-        return model.map(crudServiceOrderService.addComment(serviceOrderId, commentInput.toComment()))
+        val comment = commentInput.toComment()
+        return model.map(
+                crudServiceOrderService.addComment(serviceOrderId, comment)
+        )
     }
 
 }

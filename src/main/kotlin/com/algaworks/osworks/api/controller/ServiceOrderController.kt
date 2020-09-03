@@ -13,32 +13,35 @@ import javax.validation.Valid
 
 @RestController
 @RequestMapping("/service-orders")
-class ServiceOrderController {
-
-    @Autowired
-    private val crudServiceOrderService = CrudServiceOrderService()
-
-    @Autowired
-    private val serviceOrderRepository: ServiceOrderRepository? = null
-
+class ServiceOrderController (
+        @Autowired
+        private val crudServiceOrderService: CrudServiceOrderService,
+        @Autowired
+        private val serviceOrderRepository: ServiceOrderRepository,
+)
+{
     private val model = OutputModel()
 
     @GetMapping
-    fun list(): List<ServiceOrderModel>? {
-        return serviceOrderRepository?.findAll()?.let { model.mapCollection(it) }
+    fun list(): List<ServiceOrderModel> {
+        return model.mapCollection(
+                serviceOrderRepository.findAll()
+        )
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@Valid @RequestBody serviceOrderInput: ServiceOrderInput): ServiceOrderModel {
-        return model.map(crudServiceOrderService.save(serviceOrderInput.toServiceOrder()))
+        return model.map(
+                crudServiceOrderService.save(serviceOrderInput.toServiceOrder())
+        )
     }
 
     @GetMapping("/{serviceOrderId}")
     fun readById(@PathVariable serviceOrderId: Long): ResponseEntity<ServiceOrderModel> {
-        crudServiceOrderService.read(serviceOrderId).let { serviceOrder ->
-            return ResponseEntity.ok(model.map(serviceOrder))
-        }
+        return ResponseEntity.ok(
+                model.map(crudServiceOrderService.read(serviceOrderId))
+        )
     }
 
     @PutMapping("/{serviceOrderId}/closure")

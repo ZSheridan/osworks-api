@@ -9,27 +9,25 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 @Service
-class CrudClientService {
-
-    @Autowired
-    private val clientRepository: ClientRepository? = null
+class CrudClientService(
+        @Autowired
+        private val clientRepository: ClientRepository
+) {
 
     fun save(client: Client): Client {
-        clientRepository?.let {
-            val existingClient = it.findByEmail(client.email!!)
-            if (existingClient != null && existingClient != client)
-                throw BusinessException("Email address already in use.")
-        }
-        return clientRepository?.save(client)!!
+        val existingClient = clientRepository.findByEmail(client.email!!)
+        if (existingClient != null && existingClient != client)
+            throw BusinessException("Email address already in use.")
+        return clientRepository.save(client)
     }
 
     fun read(clientId: Long): Client {
-        return clientRepository?.findByIdOrNull(clientId)
+        return clientRepository.findByIdOrNull(clientId)
                 ?: throw EntityNotFoundException ("Client not found.")
     }
 
     fun delete(clientId: Long) {
-        clientRepository?.deleteById(clientId)
+        clientRepository.deleteById(clientId)
     }
 
 }

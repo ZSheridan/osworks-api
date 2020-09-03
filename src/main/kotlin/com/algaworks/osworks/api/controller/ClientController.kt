@@ -13,25 +13,28 @@ import javax.validation.Valid
 
 @RestController
 @RequestMapping("/clients")
-class ClientController {
-
-    @Autowired
-    private val crudClientService = CrudClientService()
-
-    @Autowired
-    private val clientRepository: ClientRepository? = null
+class ClientController(
+        @Autowired
+        private val crudClientService: CrudClientService,
+        @Autowired
+        private val clientRepository: ClientRepository
+) {
 
     private val model = OutputModel()
 
     @GetMapping
-    fun list(): List<ClientModel>? {
-        return clientRepository?.findAll()?.let { model.mapCollection(it) }
+    fun list(): List<ClientModel> {
+        return model.mapCollection(
+                clientRepository.findAll()
+        )
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@Valid @RequestBody clientInput: ClientInput): ClientModel {
-        return model.map(crudClientService.save(clientInput.toClient()))
+        return model.map(
+                crudClientService.save(clientInput.toClient())
+        )
     }
 
     @GetMapping("/{clientId}")

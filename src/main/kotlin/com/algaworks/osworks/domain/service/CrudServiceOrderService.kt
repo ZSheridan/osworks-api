@@ -14,29 +14,30 @@ import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
 
 @Service
-class CrudServiceOrderService {
+class CrudServiceOrderService(
+        @Autowired
+        private val serviceOrderRepository: ServiceOrderRepository,
 
-    @Autowired
-    private val serviceOrderRepository: ServiceOrderRepository? = null
+        @Autowired
+        private val clientRepository: ClientRepository,
 
-    @Autowired
-    private val clientRepository: ClientRepository? = null
-
-    @Autowired
-    private val commentRepository: CommentRepository? = null
+        @Autowired
+        private val commentRepository: CommentRepository
+) {
 
     fun save(serviceOrder: ServiceOrder): ServiceOrder {
-        serviceOrder.client = serviceOrder.client?.id?.let{
-            clientRepository?.findByIdOrNull(it)
-                    ?: throw BusinessException("Client not found.")
-        }
+        serviceOrder.client = serviceOrder.client?.id
+                ?.let{
+                    Id -> clientRepository.findByIdOrNull(Id)
+                        ?: throw BusinessException("Client not found.")
+                }
         serviceOrder.status = ServiceOrderStatus.OPEN
         serviceOrder.openingDate = OffsetDateTime.now()
-        return serviceOrderRepository?.save(serviceOrder)!!
+        return serviceOrderRepository.save(serviceOrder)
     }
 
     fun read(serviceOrderId: Long): ServiceOrder {
-        return serviceOrderRepository?.findByIdOrNull(serviceOrderId)
+        return serviceOrderRepository.findByIdOrNull(serviceOrderId)
                 ?: throw EntityNotFoundException("Service Order not found.")
     }
 
@@ -44,19 +45,19 @@ class CrudServiceOrderService {
         comment.serviceOrder = read(serviceOrderId)
         comment.serviceOrder!!.canAddComment()
         comment.sendDate = OffsetDateTime.now()
-        return commentRepository?.save(comment)!!
+        return commentRepository.save(comment)
     }
 
     fun close(serviceOrderId: Long) {
         val serviceOrder = read(serviceOrderId)
         serviceOrder.close()
-        serviceOrderRepository?.save(serviceOrder)
+        serviceOrderRepository.save(serviceOrder)
     }
 
     fun cancel(serviceOrderId: Long) {
         val serviceOrder = read(serviceOrderId)
         serviceOrder.cancel()
-        serviceOrderRepository?.save(serviceOrder)
+        serviceOrderRepository.save(serviceOrder)
     }
 
 }
