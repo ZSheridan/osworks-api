@@ -20,11 +20,11 @@ class ClientController(
         private val clientRepository: ClientRepository
 ) {
 
-    private val model = OutputModel()
+    private val clientOutputModel = OutputModel()
 
     @GetMapping
     fun list(): List<ClientModel> {
-        return model.mapCollection(
+        return clientOutputModel.mapCollectionFrom(
                 clientRepository.findAll()
         )
     }
@@ -32,7 +32,7 @@ class ClientController(
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@Valid @RequestBody clientInput: ClientInput): ClientModel {
-        return model.map(
+        return clientOutputModel.mapFrom(
                 crudClientService.save(clientInput.toClient())
         )
     }
@@ -40,7 +40,7 @@ class ClientController(
     @GetMapping("/{clientId}")
     fun readById(@PathVariable clientId: Long): ResponseEntity<ClientModel> {
         val client = crudClientService.read(clientId)
-        return ResponseEntity.ok(model.map(client))
+        return ResponseEntity.ok(clientOutputModel.mapFrom(client))
     }
 
     @PutMapping("/{clientId}")
@@ -50,7 +50,7 @@ class ClientController(
         val client = clientInput.toClient()
         client.id = clientId
         crudClientService.save(client)
-        return ResponseEntity.ok(model.map(client))
+        return ResponseEntity.ok(clientOutputModel.mapFrom(client))
     }
 
     @DeleteMapping("/{clientId}")

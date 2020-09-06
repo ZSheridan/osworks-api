@@ -20,11 +20,11 @@ class ServiceOrderController (
         private val serviceOrderRepository: ServiceOrderRepository,
 )
 {
-    private val model = OutputModel()
+    private val serviceOrderOutputModel = OutputModel()
 
     @GetMapping
     fun list(): List<ServiceOrderModel> {
-        return model.mapCollection(
+        return serviceOrderOutputModel.mapCollectionFrom(
                 serviceOrderRepository.findAll()
         )
     }
@@ -32,7 +32,7 @@ class ServiceOrderController (
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@Valid @RequestBody serviceOrderInput: ServiceOrderInput): ServiceOrderModel {
-        return model.map(
+        return serviceOrderOutputModel.mapFrom(
                 crudServiceOrderService.save(serviceOrderInput.toServiceOrder())
         )
     }
@@ -40,7 +40,7 @@ class ServiceOrderController (
     @GetMapping("/{serviceOrderId}")
     fun readById(@PathVariable serviceOrderId: Long): ResponseEntity<ServiceOrderModel> {
         return ResponseEntity.ok(
-                model.map(crudServiceOrderService.read(serviceOrderId))
+                serviceOrderOutputModel.mapFrom(crudServiceOrderService.read(serviceOrderId))
         )
     }
 

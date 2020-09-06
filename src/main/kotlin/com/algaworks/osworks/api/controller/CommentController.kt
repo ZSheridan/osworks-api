@@ -16,12 +16,12 @@ class CommentController(
         private val crudServiceOrderService: CrudServiceOrderService
 ) {
 
-    private val model = OutputModel()
+    private val commentOutputModel = OutputModel()
 
     @GetMapping
     fun list(@PathVariable serviceOrderId: Long): List<CommentModel> {
         val comments = crudServiceOrderService.read(serviceOrderId).comments
-        return model.mapCollection(comments)
+        return commentOutputModel.mapCollectionFrom(comments)
     }
 
     @PostMapping
@@ -29,7 +29,7 @@ class CommentController(
     fun create(@PathVariable serviceOrderId: Long,
                @Valid @RequestBody commentInput: CommentInput): CommentModel {
         val comment = commentInput.toComment()
-        return model.map(
+        return commentOutputModel.mapFrom(
                 crudServiceOrderService.addComment(serviceOrderId, comment)
         )
     }
