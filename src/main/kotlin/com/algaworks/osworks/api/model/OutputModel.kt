@@ -6,12 +6,12 @@ open class OutputModel {
 
     val modelMapper = ModelMapper()
 
-    inline fun <reified T> map(source: Any): T {
+    inline fun <reified T> mapFrom(source: Any): T {
         return modelMapper.map(source, T::class.java)
     }
 
-    inline fun <reified T> mapCollection(source: List<Any>): List<T> {
-        return source.map { item -> map(item) }
+    inline fun <reified T> mapCollectionFrom(source: List<Any>): List<T> {
+        return source.map { item -> mapFrom(item) }
     }
 
 }
